@@ -12,7 +12,7 @@ class Player(pygame.sprite.Sprite):
         self.pos = pygame.math.Vector2(x, y)
         self.vel = pygame.math.Vector2(0, 0)
         self.acc = pygame.math.Vector2(0, 0)
-        #self.jumping = False
+        self.jumping = False
         
     def update(self):
         self.acc = pygame.math.Vector2(0, GRAVITY)
@@ -21,8 +21,10 @@ class Player(pygame.sprite.Sprite):
         self.acc.x += self.vel.x * FRICTION
         self.vel += self.acc
         
-        # check platforms
-        self.check_for_platforms()
+        # check platforms only if falling
+        if self.vel.y > 0:
+            self.jumping = False
+            self.check_for_platforms()
         
         # allow for stopping if vel is near zero in either direction
         if abs(self.vel.x) < ZERO_TOLERANCE:
@@ -40,8 +42,9 @@ class Player(pygame.sprite.Sprite):
         self.rect.bottom += 2 # move down temporarily
         for platform in self.game.platforms:
             if platform.rect.collidepoint(self.rect.midbottom):
-                self.rect.bottom = platform.rect.top
+                self.pos.y = platform.rect.top
                 self.vel.y = 0
+                self.acc.y = 0
                 return True
         self.rect.bottom -= 2 # move back to position
         return False
@@ -52,7 +55,11 @@ class Player(pygame.sprite.Sprite):
             self.acc.x = -PLAYER_ACC
         if keys[pygame.K_RIGHT]:
             self.acc.x = PLAYER_ACC
- 
+        if keys[pygame.K_UP]:
+            # check if on a platform need also be not jumping or you can boost jump through a platform
+            if not self.jumping and self.check_for_platforms():
+                self.vel.y = -JUMP_VEL
+                self.jumping = True
 
 class Platform(pygame.sprite.Sprite):
     def __init__(self, game, x, y, width, height):
