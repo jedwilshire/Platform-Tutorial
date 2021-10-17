@@ -35,23 +35,35 @@ class Player(pygame.sprite.Sprite):
             self.vel.x = 0
         if abs(self.vel.y) < ZERO_TOLERANCE:
             self.vel.y = 0
-            
+        self.pos.x += 1/2 * self.acc.x * self.game.dt ** 2 + self.vel.x * self.game.dt    
+        
         self.check_for_wall_collisions()
         
         # dp = 1/2 * a * dt^2 + v*dt
-        self.pos += 1/2 * self.acc * self.game.dt ** 2 + self.vel * self.game.dt
+        self.pos.y += 1/2 * self.acc.y * self.game.dt ** 2 + self.vel.y * self.game.dt
         
         if self.pos.y - self.previous_pos.y > PLATFORM_TOP_THICKNESS:
-            self.pos.y = self.previous_pos.y + PLATFORM_TOP_THICKNESS
+            self.pos.y = self.previous_pos.y + PLATFORM_TOP_THICKNESS      
         
         # use bottom middle of sprite to position
         self.rect.midbottom = self.pos
+    
+    def collide_point(self, sprite1, sprite2):
+        right = self.pos.x + self.rect.width / 2
+        left = self.pos.x - self.rect.width / 2
+        top = self.pos.y - self.rect.height
+        bottom = self.pos.y
+        return (right >= sprite2.rect.left and
+                left <= sprite2.rect.right and
+                bottom >= sprite2.rect.top and
+                top <= sprite2.rect.bottom)
         
+
     def check_for_wall_collisions(self):
-        hits = pygame.sprite.spritecollide(self, self.game.platforms, False)
+        hits = pygame.sprite.spritecollide(self, self.game.platforms, False, self.collide_point)
         if len(hits) > 0:
             for p in hits:
-                #if self.pos.y > p.rect.centery and self.vel.y < 0 and self.pos.x > p.rect.left + self.rect.width / 2 and self.pos.x < p.rect.right - self.rect.width / 2:
+                # if self.pos.y > p.rect.centery and self.vel.y < 0 and self.pos.x > p.rect.left + self.rect.width / 2 and self.pos.x < p.rect.right - self.rect.width / 2:
                 # if self.pos.y > p.rect.centery and self.vel.y < 0: # has issue with hitting side while jumping
                 if self.pos.y > p.rect.centery and self.vel.y < 0 and self.pos.x > p.rect.left + PLATFORM_EDGE_THICKNESS and self.pos.x < p.rect.right - PLATFORM_EDGE_THICKNESS:
                     self.vel.y = 0
