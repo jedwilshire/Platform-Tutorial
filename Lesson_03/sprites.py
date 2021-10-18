@@ -14,7 +14,7 @@ class Player(pygame.sprite.Sprite):
         self.acc = pygame.math.Vector2(0, 0)
         self.jumping = False
         self.previous_pos = self.pos
-        self.previous_pos.y = self.pos.y - PLATFORM_TOP_THICKNESS
+        self.previous_pos.y = self.pos.y - PLATFORM_TOP_THICKNESS - 1
         
     def update(self):
         on_platform = False
