@@ -42,8 +42,8 @@ class Player(pygame.sprite.Sprite):
         # dp = 1/2 * a * dt^2 + v*dt
         self.pos.y += 1/2 * self.acc.y * self.game.dt ** 2 + self.vel.y * self.game.dt
         
-        if self.pos.y - self.previous_pos.y > PLATFORM_TOP_THICKNESS:
-            self.pos.y = self.previous_pos.y + PLATFORM_TOP_THICKNESS      
+        if self.pos.y - self.previous_pos.y >= PLATFORM_TOP_THICKNESS:
+            self.pos.y = self.previous_pos.y + PLATFORM_TOP_THICKNESS - 1      
         
         # use bottom middle of sprite to position
         self.rect.midbottom = self.pos
