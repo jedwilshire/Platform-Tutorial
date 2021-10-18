@@ -17,18 +17,23 @@ class Player(pygame.sprite.Sprite):
         self.previous_pos.y = self.pos.y - PLATFORM_TOP_THICKNESS
         
     def update(self):
-        self.acc = pygame.math.Vector2(0, GRAVITY)
-        self.check_keys()
-        # apply friction to acceleration in x direction only
-        self.acc.x += self.vel.x * FRICTION
-        self.vel += self.acc
-        
         on_platform = False
-        
+        self.acc = pygame.math.Vector2(0, GRAVITY)
         # check platforms only if falling
         if self.vel.y > 0:
             self.jumping = False
             on_platform = self.check_for_platforms()
+        self.check_keys()
+        # apply friction to acceleration in x direction only
+        self.acc.x += self.vel.x * FRICTION
+        self.vel.y += self.acc.y
+        if on_platform:
+            self.vel.x += self.acc.x
+        else:
+            self.vel.x += 1/5 * self.acc.x
+        
+        
+        
         
         # allow for stopping if vel is near zero in either direction
         if abs(self.vel.x) < ZERO_TOLERANCE:
