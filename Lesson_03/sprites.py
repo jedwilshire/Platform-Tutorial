@@ -13,8 +13,9 @@ class Player(pygame.sprite.Sprite):
         self.vel = pygame.math.Vector2(0, 0)
         self.acc = pygame.math.Vector2(0, 0)
         self.jumping = False
-        self.previous_pos = self.pos
-        self.previous_pos.y = self.pos.y - PLATFORM_TOP_THICKNESS - 1
+        self.previous_pos = pygame.math.Vector2(x, y)
+        self.previous_pos.y = self.pos.y - PLATFORM_TOP_THICKNESS + 1
+        
         
     def update(self):
         on_platform = False
@@ -31,10 +32,7 @@ class Player(pygame.sprite.Sprite):
             self.vel.x += self.acc.x
         else:
             self.vel.x += 1/5 * self.acc.x
-        
-        
-        
-        
+
         # allow for stopping if vel is near zero in either direction
         if abs(self.vel.x) < ZERO_TOLERANCE:
             self.vel.x = 0
@@ -47,9 +45,12 @@ class Player(pygame.sprite.Sprite):
         # dp = 1/2 * a * dt^2 + v*dt
         self.pos.y += 1/2 * self.acc.y * self.game.dt ** 2 + self.vel.y * self.game.dt
         
-        if self.pos.y - self.previous_pos.y >= PLATFORM_TOP_THICKNESS:
-            self.pos.y = self.previous_pos.y + PLATFORM_TOP_THICKNESS - 1      
-        
+        # prevent falling more pixels than allowed
+        if self.pos.y - self.previous_pos.y > MAX_FALL_PER_FRAME:
+            self.pos.y = self.previous_pos.y + MAX_FALL_PER_FRAME
+            
+
+        self.previous_pos.y = self.pos.y
         # use bottom middle of sprite to position
         self.rect.midbottom = self.pos
     
@@ -87,7 +88,7 @@ class Player(pygame.sprite.Sprite):
             
     
     def check_for_platforms(self):
-        self.pos.y += 2 # move down temporarily
+        self.pos.y += PLATFORM_PLAYER_ADJUSTMENT # move down temporarily
         bottom_left = (self.pos.x - self.rect.width / 2, self.pos.y)
         bottom_right = (self.pos.x + self.rect.width / 2, self.pos.y)
         for platform in self.game.platforms:
@@ -97,7 +98,7 @@ class Player(pygame.sprite.Sprite):
                     self.vel.y = 0
                     self.acc.y = 0
                     return True
-        self.pos.y -= 2 # move back to position
+        self.pos.y -= PLATFORM_PLAYER_ADJUSTMENT # move back to position
         return False
     
     def check_keys(self):
