@@ -1,4 +1,4 @@
-import pygame, sprites
+import pygame, sprites, world, os
 from settings import *
 
 class Application:
@@ -10,26 +10,43 @@ class Application:
         self.all_sprites = pygame.sprite.LayeredUpdates()
         # a sprite group for platforms
         self.platforms = pygame.sprite.Group()
-        self.player = sprites.Player(self, WIDTH / 2, HEIGHT / 2)
         self.running = True
         self.debugging = False
-        self.make_platforms()
+        self.home_dir = os.path.dirname(__file__)
+        self.load_game()
     
-    def make_platforms(self):
-        sprites.Platform(self, 0, HEIGHT_TILES - 1, WIDTH_TILES, 1)
-        sprites.Platform(self, 16, 16, 4, 1)
-        sprites.Platform(self, 8, HEIGHT_TILES - 2, 2, 1)
-        
+    def load_game(self):
+        map_file = os.path.join(self.home_dir, 'map1.txt')
+        self.map = world.World(map_file)
+        self.camera = world.Camera(self.map.width, self.map.height)
+        # end file read
+        for y, row in enumerate(self.map.tiles):
+            plat_begin = False
+            plat_width = 0
+            for x, tile in enumerate(row):
+                if tile == '1':
+                    plat_width += 1
+                    plat_begin = True
+                elif tile == '.' and plat_begin:
+                    plat_begin = False
+                    sprites.Platform(self, x - plat_width - 1, y, plat_width, 1)
+                    plat_width = 0
+                elif tile == 'P':
+                    self.player = sprites.Player(self, x, y)
+            if plat_width:
+                sprites.Platform(self, x - plat_width - 1, y, plat_width, 1)
     def gameloop(self):
         while self.running:
             self.dt = self.clock.tick(FPS) / 1000
             self.update_events()
             self.all_sprites.update()
+            self.camera.update(self.player)
             self.update_screen()
     
     def update_screen(self):
         self.screen.fill(BLACK)
-        self.all_sprites.draw(self.screen)
+        for sprite in self.all_sprites:
+            self.screen.blit(sprite.image, self.camera.apply(sprite))
         if self.debugging:
             self.draw_grid()
             self.show_statistics()
