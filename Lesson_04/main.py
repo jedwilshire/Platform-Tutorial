@@ -33,14 +33,27 @@ class Application:
                     plat_width = 0
                 elif tile == 'P':
                     self.player = sprites.Player(self, x, y)
-            if plat_width:
+                    # a camera portal around the player
+                    self.camera_portal = world.Camera_Portal(self,
+                                                             self.player.rect.x,
+                                                             self.player.rect.y,
+                                                             CAMERA_WIDTH,
+                                                             CAMERA_HEIGHT)
+                                                             
+            if plat_width > 0:
                 sprites.Platform(self, x - plat_width - 1, y, plat_width, 1)
     def gameloop(self):
         while self.running:
             self.dt = self.clock.tick(FPS) / 1000
             self.update_events()
+            
+            # update sprite positions
             self.all_sprites.update()
-            self.camera.update(self.player)
+            
+            # update camera portal
+            self.camera_portal.update()
+            
+            self.camera.update(self.camera_portal)
             self.update_screen()
     
     def update_screen(self):
@@ -50,6 +63,7 @@ class Application:
         if self.debugging:
             self.draw_grid()
             self.show_statistics()
+            pygame.draw.rect(self.screen, WHITE, self.camera.apply(self.camera_portal), width = 1)
         pygame.display.flip()
     
     def update_events(self):
