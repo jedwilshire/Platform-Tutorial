@@ -63,23 +63,26 @@ class Player(pygame.sprite.Sprite):
                 if self.walk_animation_time < 0.3:
                     self.walk_animation_time += self.game.dt
                     if not self.facing_right:
-                        self.image = pygame.transform.flip(self.images['walk1'], True, False)
+                        self.image = self.images['walk1_left']
                     else:
                         self.image = self.images['walk1']
                 else:
                     self.walk_animation_time += self.game.dt
                     self.walk_animation_time %= 0.6
                     if not self.facing_right:
-                        self.image = pygame.transform.flip(self.images['walk2'], True, False)
+                        self.image = self.images['walk2_left']
                     else:
                         self.image = self.images['walk2']
             else:
                 self.walk_animation_time = 0
-                self.image = self.images['idle']
+                if not self.facing_right:
+                    self.image = self.images['idle_left']
+                else:
+                    self.image = self.images['idle']
         else:
             self.walk_animation_time = 0
             if not self.facing_right:
-                self.image = pygame.transform.flip(self.images['jump'], True, False)
+                self.image = self.images['jump_left']
             else:
                 self.image = self.images['jump']
     

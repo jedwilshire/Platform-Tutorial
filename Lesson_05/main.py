@@ -19,9 +19,13 @@ class Application:
     def load_images(self):
         images_dir = os.path.join(self.home_dir, 'images')
         self.player_images = {'idle' : pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[0])).convert_alpha(),
-                              'jump' : pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[1])).convert_alpha(),
-                              'walk1' : pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[2])).convert_alpha(),
-                              'walk2' : pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[3])).convert_alpha()}
+                              'idle_left' : pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[1])).convert_alpha(),
+                              'jump' : pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[2])).convert_alpha(),
+                              'walk1' : pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[4])).convert_alpha(),
+                              'walk2' : pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[5])).convert_alpha(),
+                              'jump_left' : pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[3])).convert_alpha(),
+                              'walk1_left' : pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[6])).convert_alpha(),
+                              'walk2_left' : pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[7])).convert_alpha()}
         for img in self.player_images.keys():
             self.player_images[img] = pygame.transform.scale(self.player_images[img],(PLAYER_WIDTH, PLAYER_HEIGHT))
        
