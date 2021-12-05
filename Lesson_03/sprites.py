@@ -69,8 +69,10 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.Surface((PLAYER_WIDTH, PLAYER_HEIGHT))
         self.image.fill(ORANGE)
         self.rect = self.image.get_rect()
+        
+        self.pos = pygame.math.Vector2(x, y) * TILE_SIZE
         self.rect.midbottom = (x, y)
-        self.pos = pygame.math.Vector2(x, y)
+        
         self.vel = pygame.math.Vector2(0, 0)
         self.acc = pygame.math.Vector2(0, 0)
         self.jumping = False

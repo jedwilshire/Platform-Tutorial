@@ -58,9 +58,7 @@ def floor_collide(entity, floor):
     else:
         return False    
     
-def is_between(a, p, c):
-    return a <= p <= c or a >= p >= c
-            
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
         super().__init__()
@@ -69,8 +67,9 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.Surface((PLAYER_WIDTH, PLAYER_HEIGHT))
         self.image.fill(ORANGE)
         self.rect = self.image.get_rect()
+        
+        self.pos = pygame.math.Vector2(x, y) * TILE_SIZE
         self.rect.midbottom = (x, y)
-        self.pos = pygame.math.Vector2(x, y)
         self.vel = pygame.math.Vector2(0, 0)
         self.acc = pygame.math.Vector2(0, 0)
         self.jumping = False
