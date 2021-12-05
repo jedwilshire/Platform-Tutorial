@@ -19,13 +19,14 @@ class Application:
     def load_images(self):
         images_dir = os.path.join(self.home_dir, 'images')
         self.player_images = {'idle' : pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[0])).convert_alpha(),
-                              'idle_left' : pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[1])).convert_alpha(),
+                              'idle_left': pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[1])).convert_alpha(),
                               'jump' : pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[2])).convert_alpha(),
+                              'jump_left': pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[3])).convert_alpha(),
                               'walk1' : pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[4])).convert_alpha(),
-                              'walk2' : pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[5])).convert_alpha(),
-                              'jump_left' : pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[3])).convert_alpha(),
-                              'walk1_left' : pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[6])).convert_alpha(),
+                              'walk1_left' : pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[5])).convert_alpha(),
+                              'walk2' : pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[6])).convert_alpha(),
                               'walk2_left' : pygame.image.load(os.path.join(images_dir, PLAYER_IMAGES[7])).convert_alpha()}
+
         for img in self.player_images.keys():
             self.player_images[img] = pygame.transform.scale(self.player_images[img],(PLAYER_WIDTH, PLAYER_HEIGHT))
        
@@ -48,7 +49,6 @@ class Application:
                                                          CAMERA_HEIGHT)
         
         self.camera = world.Camera(self.world_obj.width, self.world_obj.height)
-
     def gameloop(self):
         while self.running:
             self.dt = self.clock.tick(FPS) / 1000
@@ -65,11 +65,10 @@ class Application:
     
     def update_screen(self):
         self.screen.fill(BLACK)
-        self.screen.blit(self.world_image, self.camera.apply_to_rect(self.world_rect))
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
         if self.debugging:
-            self.draw_platform_outlines()
+            self.draw_grid()
             self.show_statistics()
             pygame.draw.rect(self.screen, WHITE, self.camera.apply(self.camera_portal), width = 1)
         pygame.display.flip()
@@ -81,11 +80,13 @@ class Application:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_h:
                     self.debugging = not self.debugging
+                    
+    def draw_grid(self):
+        for x in range(0, WIDTH, TILE_SIZE):
+            pygame.draw.line(self.screen, GREY, (x, 0), (x, HEIGHT))
+        for y in range(0, HEIGHT, TILE_SIZE):
+            pygame.draw.line(self.screen, GREY, (0, y), (WIDTH, y))
     
-    def draw_platform_outlines(self):
-        for plat in self.platforms:
-            pygame.draw.rect(self.screen, WHITE, self.camera.apply(plat), width = 1)
-            
     def show_statistics(self):
         fps_str = 'FPS: = {:.2f}'.format(self.clock.get_fps())      
         acc_str = 'ACC: = <{:.2f}, {:.2f}>'.format(self.player.acc.x, self.player.acc.y)
