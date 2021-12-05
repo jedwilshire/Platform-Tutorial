@@ -35,3 +35,4 @@ CAMERA_HEIGHT = 5 * TILE_SIZE
 
 # Images
 PLAYER_IMAGES = ['platformChar_idle.png', 'platformChar_idle_left.png', 'platformChar_jump.png', 'platformChar_jump_left.png', 'platformChar_walk1.png', 'platformChar_walk1_left.png', 'platformChar_walk2.png', 'platformChar_walk2_left.png']
+
