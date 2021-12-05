@@ -1,5 +1,33 @@
 import pygame
 from settings import *
+# platform collision function
+# entity must have a self.pos and a self.previous_pos property
+def platform_collide(entity, platform):
+    plat_left, plat_left_top = platform.rect.left, platform.rect.top
+    plat_right, plat_right_top = platform.rect.right, platform.rect.top
+    
+    y1 = entity.previous_pos.y
+    y2 = entity.pos.y
+    y2 += 1 # improve detection margin of error
+    
+    # find coordinates of intersection of segment representing top of platform and previos to current entity pos
+    x = entity.pos.x # we assume negligble movement in x direction
+    
+    # create a line y =  mx + b to represent top of platform
+    plat_m = (plat_right_top - plat_left_top) / (plat_right - plat_left)
+    plat_b = plat_right_top - plat_m * plat_right
+    
+    # use equation to find y coordinat of intersection
+    y = plat_m * x + plat_b
+    if (is_between(plat_left, x, plat_right) and
+            is_between(y1, y, y2) and is_between(plat_left_top, y, plat_right_top)):
+        return pygame.math.Vector2(x, y)
+    else:
+        return None
+    
+def is_between(a, p, c):
+    return a <= p <= c or a >= p >= c
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
         super().__init__()
@@ -26,10 +54,16 @@ class Player(pygame.sprite.Sprite):
         if self.vel.y > 0:
             self.jumping = False
             on_platform = self.check_for_platforms()
+        
+        # check key presses
         self.check_keys()
+        
         # apply friction to acceleration in x direction only
         self.acc.x += self.vel.x * FRICTION
+        # change vel.y by acc.y
         self.vel.y += self.acc.y
+        
+        # if player is in the air, then horizontal acceleration is dampened
         if on_platform:
             self.vel.x += self.acc.x
         else:
@@ -40,19 +74,18 @@ class Player(pygame.sprite.Sprite):
             self.vel.x = 0
         if abs(self.vel.y) < ZERO_TOLERANCE:
             self.vel.y = 0
+        
+        # store previous pos
+        self.previous_pos = pygame.math.Vector2(self.pos)
+            
+        # use position equation for x only    
         self.pos.x += 1/2 * self.acc.x * self.game.dt ** 2 + self.vel.x * self.game.dt    
         
         self.check_for_wall_collisions()
         
-        # dp = 1/2 * a * dt^2 + v*dt
+        # use position equaiton for y      dp = 1/2 * a * dt^2 + v*dt
         self.pos.y += 1/2 * self.acc.y * self.game.dt ** 2 + self.vel.y * self.game.dt
-        
-        # prevent falling more pixels than allowed
-        if self.pos.y - self.previous_pos.y > MAX_FALL_PER_FRAME:
-            self.pos.y = self.previous_pos.y + MAX_FALL_PER_FRAME
-            
-
-        self.previous_pos.y = self.pos.y
+                
         # use bottom middle of sprite to position
         self.rect.midbottom = self.pos
         self.set_image()
@@ -103,7 +136,7 @@ class Player(pygame.sprite.Sprite):
             for p in hits:
                 # if self.pos.y > p.rect.centery and self.vel.y < 0 and self.pos.x > p.rect.left + self.rect.width / 2 and self.pos.x < p.rect.right - self.rect.width / 2:
                 # if self.pos.y > p.rect.centery and self.vel.y < 0: # has issue with hitting side while jumping
-                if self.pos.y > p.rect.centery and self.vel.y < 0 and self.pos.x > p.rect.left + PLATFORM_EDGE_THICKNESS and self.pos.x < p.rect.right - PLATFORM_EDGE_THICKNESS:
+                if self.pos.y > p.rect.centery and self.vel.y < 0: 
                     self.vel.y = 0
                     self.pos.y = p.rect.bottom + self.rect.height
                     return
