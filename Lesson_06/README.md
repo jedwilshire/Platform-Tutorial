@@ -10,3 +10,8 @@ actually invisible.
 the draw_grid method is removed from debugging options in main
 as it no longer is usefull.  Instead debugging shows the
 outlines of platforms through a method calld draw_platform_outlines
+
+Important steps:
+1) remove the self.image from platforms class and remove call
+to add to all_sprites
+2) Add the world image blit to the update_screen method in main

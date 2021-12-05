@@ -68,7 +68,7 @@ class Player(pygame.sprite.Sprite):
         self.image = self.images['idle']
         self.rect = self.image.get_rect()
         
-        self.pos = pygame.math.Vector2(x, y) * TILE_SIZE
+        self.pos = pygame.math.Vector2(x, y)
         self.rect.midbottom = (x, y)
         
         self.vel = pygame.math.Vector2(0, 0)
@@ -206,9 +206,4 @@ class Platform(pygame.sprite.Sprite):
         super().__init__()
         self.game = game
         self.game.platforms.add(self)
-        self.game.all_sprites.add(self, layer = PLATFORM_LAYER)
-        self.image = pygame.Surface((width * TILE_SIZE, height * TILE_SIZE))
-        self.image.fill(GREEN)
-        self.rect = self.image.get_rect()
-        self.rect.x = x * TILE_SIZE
-        self.rect.y = y * TILE_SIZE
+        self.rect = pygame.Rect(x, y, width, height)

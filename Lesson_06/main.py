@@ -64,7 +64,7 @@ class Application:
             self.update_screen()
     
     def update_screen(self):
-        self.screen.fill(BLACK)
+        self.screen.blit(self.world_image, self.camera.apply_to_rect(self.world_rect))
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
         if self.debugging:
